@@ -7,12 +7,14 @@ import('got').then((gotModule) => {
   got = gotModule.default || gotModule;
 });
 const cors = require('cors');
-app.use(cors({
-  origin: 'http://localhost:3000/'
-}));
+
 
 const app = express();
 const port = 3000;
+
+app.use(cors({
+  origin: 'http://localhost:3000/'
+}));
 
 app.get('/', (req, res, next) => {
     // Get all of the medicine details from the database at the link https://backend-database-olz2xjbmza-uc.a.run.app/
