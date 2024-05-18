@@ -2,11 +2,22 @@ const express = require('express');
 const logResponse = require('./log.js');
 const getMedicines = require('./data.js')
 
+let got;
+import('got').then((gotModule) => {
+  got = gotModule.default || gotModule;
+});
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:3000/'
+}));
+
 const app = express();
 const port = 3000;
 
 app.get('/', (req, res, next) => {
-    // TODO Get all of the medicine details from the database and replace the following hardcoded values
+    // Get all of the medicine details from the database at the link https://backend-database-olz2xjbmza-uc.a.run.app/
+
+    // let medicines = got('https://backend-database-olz2xjbmza-uc.a.run.app/').json();
     let medicines = getMedicines();
 
     const expiryStatus = req.query.status;
