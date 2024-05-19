@@ -1,35 +1,22 @@
 const express = require('express');
 const logResponse = require('./log.js');
 const getMedicines = require('./data.js')
-
-let got;
-import('got').then((gotModule) => {
-  got = gotModule.default || gotModule;
-});
 const cors = require('cors');
 
-
+const db = 'https://backend-database-olz2xjbmza-uc.a.run.app'
 const app = express();
 const port = 3000;
 
-app.use((req, res, next) => {
-  const origin = req.get('Origin');
-  if (origin) {
-    console.log(`SERVER LOGS:\tCORS request received from origin: ${origin}`);
-  }
-  next();
-});
-
 app.use(cors());
 
-app.get('/', (req, res, next) => {
-    // Get all of the medicine details from the database at the link https://backend-database-olz2xjbmza-uc.a.run.app/
-
-    // let medicines = got('https://backend-database-olz2xjbmza-uc.a.run.app/').json();
-    let medicines = getMedicines();
-
-    const expiryStatus = req.query.status;
-    if (expiryStatus) {
+app.get('/', async (req, res, next) => {
+  const expiryStatus = req.query.status;
+  let options = { method: 'GET' };
+  try{
+    const response = await fetch(db, options)
+    let medicines = await response.json();
+    if (expiryStatus){
+      if (expiryStatus) {
         if (expiryStatus === 'expired') {
           medicines = medicines.filter(medicine => medicine.expiryStatus === 'Expired');
         } else if (expiryStatus === 'will-expire-soon') {
@@ -38,11 +25,13 @@ app.get('/', (req, res, next) => {
         else if (expiryStatus === 'not-expired') {
           medicines = medicines.filter(medicine => medicine.expiryStatus === 'Not Expired');
         }
-    }
-
-    // Send the response
+    }}
+    res.status(200)
     res.json(medicines);
-    next();
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
 });
 
 app.use(logResponse);
