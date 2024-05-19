@@ -12,12 +12,13 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-// app.use(cors({
-//   origin: 'http://localhost:3000/',
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['*'],
-// }));
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  if (origin) {
+    console.log(`SERVER LOGS:\tCORS request received from origin: ${origin}`);
+  }
+  next();
+});
 
 app.use(cors());
 
